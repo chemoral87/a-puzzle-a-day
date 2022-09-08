@@ -1,13 +1,30 @@
 <template>
   <div>
-    <!-- {{ boardTemp }}
-    {{ board }} -->
+    <!-- {{ boardTemp }} -->
+    <v-row>
+      <v-col cols="auto">
+        <v-select :items="select_months" v-model="month_play" label="Month">
+        </v-select
+      ></v-col>
+      <v-col cols="auto">
+        <v-select
+          :items="select_days"
+          v-model="day_play"
+          label="Day"
+        ></v-select>
+      </v-col>
+      <v-col cols="auto">
+        <v-btn class="primary" @click="newPlay">Play</v-btn>
+      </v-col>
+    </v-row>
+
     <div style="display: flex">
       <div style="margin-right: 15px">
         <BoardPieces />
       </div>
       <div style="margin-right: 15px">
         <div>Puzzle Board</div>
+
         <table class="sample">
           <tr v-for="(row, iy) in boardTemplate" :key="iy">
             <td
@@ -30,12 +47,18 @@
   </div>
 </template>
 <script>
-import { mapMutations, mapGetters } from 'vuex'
+import { mapMutations, mapGetters, mapActions } from 'vuex'
 import BoardPieces from './BoardPieces.vue'
+import { days, months } from '../static/pieces'
 export default {
   props: {},
   data() {
-    return {}
+    return {
+      month_play: 'Jan',
+      day_play: 1,
+      select_months: months,
+      select_days: days,
+    }
   },
   methods: {
     ...mapMutations({
@@ -43,27 +66,45 @@ export default {
       initBoard: 'puzzleBoard/initBoard',
       setBoardTemp: 'puzzleBoard/setBoardTemp',
       setPieceOnPuzzle: 'puzzleBoard/setPieceOnPuzzle',
+
       clearCurrent: 'box/clearCurrent',
       removePieceFromBox: 'box/removePieceFromBox',
+      setPieceOnBox: 'box/setPieceOnBox',
       // flipPiece: 'puzzleBoard/flipPiece',
       // setCurrentPiece: 'puzzleBoard/setCurrentPiece',
     }),
+    ...mapActions({
+      removeAllPieceFromPuzzle: 'puzzleBoard/removeAllPieceFromPuzzle',
+      newPuzzlePlay: 'puzzleBoard/newPuzzlePlay',
+    }),
+    async newPlay() {
+      let pieces = await this.removeAllPieceFromPuzzle()
+      for (let [ix, piece] of pieces.entries()) {
+        this.setPieceOnBox(piece)
+      }
+      this.newPuzzlePlay({ month: this.month_play, day: this.day_play })
+    },
     getBackground(x, y) {
       if (this.boardTemp.length == 0) return {}
       let cllTemp = this.boardTemp[y][x]
       let cllBoard = this.board[y][x]
 
-      if (cllBoard != 0) {
+      if (cllBoard != 0 && cllTemp != 0) {
         return {
-          backgroundColor: cllBoard.color,
+          backgroundColor: 'gray',
         }
-      } else if (cllTemp != 0) {
+      } else if (cllBoard == 0 && cllTemp != 0) {
         return {
           backgroundColor: cllTemp.color,
         }
+      } else if (cllBoard == 1) {
+        return {
+          backgroundColor: 'LightSlateGray',
+        }
       }
+
       return {
-        backgroundColor: 'transparent',
+        backgroundColor: cllBoard.color,
       }
     },
     ghostPiece(posY, posX) {
@@ -104,11 +145,17 @@ export default {
         this.setPieceOnPuzzle({ piece: this.currentPiece, posY: y, posX: x })
         this.removePieceFromBox(this.currentPiece)
         this.clearCurrent()
+
       }
-      // console.log(' canPlaced', canPlaced, y, x)
+      if (this.getBoxPieces.length == 0) {
+        alert('Congratulations YOU FINISH')
+      }
     },
   },
   computed: {
+    ...mapGetters({
+      getBoxPieces: 'box/getBoxPieces',
+    }),
     board() {
       return this.$store.state.puzzleBoard.board
     },
@@ -124,7 +171,7 @@ export default {
   },
   mounted() {
     let me = this
-    this.initBoard()
+    this.newPlay()
   },
   components: { BoardPieces },
 }

@@ -13,7 +13,11 @@ export const state = () => ({
   pieces: [],
 })
 
-export const getters = {}
+export const getters = {
+  getPieces(state) {
+    return state.pieces
+  },
+}
 
 export const mutations = {
   initBoard(state) {
@@ -26,18 +30,19 @@ export const mutations = {
   setBoardTemp(state, boardTemp) {
     state.boardTemp = boardTemp
   },
+  clearPieces(state) {
+    state.pieces = []
+  },
   removePieceFromPuzzle(state, piece) {
     state.pieces = state.pieces.filter((x) => {
       return x.name != piece.name
     })
 
     let boardBak = Object.assign([], state.board)
-    console.log(boardBak)
     for (let [y, row] of boardBak.entries()) {
       for (let [x, val] of row.entries()) {
         let cll = val
         if (!Number.isInteger(cll)) {
-          console.log(cll.name, y, x)
           if (cll.name == piece.name) {
             boardBak[y][x] = 0
           }
@@ -72,6 +77,32 @@ export const mutations = {
     state.board = boardBak
     state.boardTemp = this.$getNewBoardTemp()
   },
+  blockCells(state, { day, month }) {
+    let boardTemplate = Object.assign([], state.boardTemplate)
+    let board = Object.assign([], state.board)
+
+    for (let [y, row] of boardTemplate.entries()) {
+      for (let [x, val] of row.entries()) {
+        if (val == day || val == month) {
+          board[y][x] = 1
+        }
+      }
+    }
+    state.board = Object.assign([], board)
+  },
 }
 
-export const actions = {}
+export const actions = {
+  removeAllPieceFromPuzzle({ commit, getters }) {
+    let pieces = Object.assign([], getters.getPieces)
+
+    commit('clearPieces')
+    commit('initBoard')
+
+    return pieces
+  },
+  newPuzzlePlay({ commit, getters }, payload) {
+    commit('blockCells', payload)
+    // console.log(payload)
+  },
+}

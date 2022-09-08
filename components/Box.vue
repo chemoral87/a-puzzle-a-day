@@ -3,7 +3,7 @@
     style="
       display: grid;
       column-gap: 5px;
-      grid-template-columns: auto auto auto auto;
+      grid-template-columns: auto auto auto auto auto;
     "
   >
     <div v-for="(piece, ix) in pieces" :key="ix">
