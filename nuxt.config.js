@@ -3,8 +3,6 @@ import colors from 'vuetify/es5/util/colors'
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   ssr: false,
-  srcDir: 'src',
-  buildDir: 'functions/.nuxt',
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     titleTemplate: '%s - a-puzzle-a-day',
@@ -65,7 +63,5 @@ export default {
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {
-    extractCSS: true,
-  },
+  build: {},
 }
