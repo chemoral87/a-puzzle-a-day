@@ -1,21 +1,17 @@
 <template>
-  <div
-    style="
-      display: grid;
-      column-gap: 5px;
-      grid-template-columns: auto auto auto auto;
-    "
-  >
-    <div v-for="(piece, ix) in pieces" :key="ix">
-      <v-btn class="primary mr-1" @click="setPiece(piece)">Set Current</v-btn>
+  <div v-if="tPiece">
+    <div>
+      <v-btn class="primary mr-1" @click="rotatePiece(tPiece)">Rotate</v-btn>
+      <v-btn class="primary mr-1" @click="flipPiece(tPiece)">Flip</v-btn>
+      <v-btn class="primary mr-1" @click="clearCurrent()">Clear</v-btn>
       <table class="sample">
-        <tr v-for="(row, iy) in piece.shape" :key="ix + iy">
+        <tr v-for="(row, iy) in tPiece.shape" :key="iy">
           <td
             v-for="(cll, iz) in row"
-            :key="ix + iy + iz"
-            :style="{ backgroundColor: cll == 1 ? piece.color : '' }"
+            :key="iy + iz"
+            :style="{ backgroundColor: cll == 1 ? tPiece.color : '' }"
           >
-            {{ cll == 1 ? piece.name : '' }}
+            {{ cll == 1 ? tPiece.name : '' }}
           </td>
         </tr>
       </table>
@@ -30,23 +26,17 @@ export default {
   data() {
     return {}
   },
-  computed: {
-    pieces() {
-      return this.$store.state.box.pieces
-    },
-  },
-  // https://htmlcolorcodes.com/es/nombres-de-los-colores/
   methods: {
     ...mapMutations({
       rotatePiece: 'box/rotatePiece',
       flipPiece: 'box/flipPiece',
-      setCurrentPiece: 'box/setCurrentPiece',
-      clearBoardTemp: 'puzzleBoard/clearBoardTemp',
-    }),
 
-    setPiece(shape) {
-      this.clearBoardTemp()
-      this.setCurrentPiece(shape)
+      clearCurrent: 'box/clearCurrent',
+    }),
+  },
+  computed: {
+    tPiece() {
+      return this.$store.state.box.currentPiece
     },
   },
   mounted() {
