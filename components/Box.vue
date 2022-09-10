@@ -1,12 +1,6 @@
 <template>
-  <div
-    style="
-      display: grid;
-      column-gap: 5px;
-      grid-template-columns: auto auto auto auto auto;
-    "
-  >
-    <div v-for="(piece, ix) in pieces" :key="ix">
+  <v-row dense>
+    <v-col dense v-for="(piece, ix) in pieces" :key="ix">
       <v-btn class="primary mr-1" @click="setPiece(piece)">Set Current</v-btn>
       <table class="sample">
         <tr v-for="(row, iy) in piece.shape" :key="ix + iy">
@@ -20,8 +14,8 @@
         </tr>
       </table>
       <br />
-    </div>
-  </div>
+    </v-col>
+  </v-row>
 </template>
 <script>
 import { mapMutations } from 'vuex'

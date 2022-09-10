@@ -1,12 +1,11 @@
 <template>
   <div>
-    <!-- {{ boardTemp }} -->
-    <v-row>
-      <v-col cols="auto">
+    <v-row dense>
+      <v-col cols="6" sm="auto">
         <v-select :items="select_months" v-model="month_play" label="Month">
         </v-select
       ></v-col>
-      <v-col cols="auto">
+      <v-col cols="6" sm="auto">
         <v-select
           :items="select_days"
           v-model="day_play"
@@ -18,11 +17,11 @@
       </v-col>
     </v-row>
 
-    <div style="display: flex">
-      <div style="margin-right: 15px">
+    <v-row dense>
+      <v-col cols="auto">
         <BoardPieces />
-      </div>
-      <div style="margin-right: 15px">
+      </v-col>
+      <v-col cols="auto">
         <div>Puzzle Board</div>
 
         <table class="sample">
@@ -38,12 +37,12 @@
             </td>
           </tr>
         </table>
-      </div>
-      <div>
+      </v-col>
+      <v-col cols="auto">
         Current Piece
         <CurrentPiece />
-      </div>
-    </div>
+      </v-col>
+    </v-row>
   </div>
 </template>
 <script>
@@ -145,7 +144,6 @@ export default {
         this.setPieceOnPuzzle({ piece: this.currentPiece, posY: y, posX: x })
         this.removePieceFromBox(this.currentPiece)
         this.clearCurrent()
-
       }
       if (this.getBoxPieces.length == 0) {
         alert('Congratulations YOU FINISH')
