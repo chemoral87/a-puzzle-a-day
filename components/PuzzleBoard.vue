@@ -144,7 +144,7 @@ export default {
       let boardEmptyCells = Object.assign([], this.getBoardEmptyCells)
       // let count = 0
       // let this.powercount = 0
-      while (boardEmptyCells.length > 0 && iterations < 1600) {
+      while (boardEmptyCells.length > 0 && iterations < 1800) {
         // console.log(iterations)
         let hasPlaced = false
         let boxPiece
