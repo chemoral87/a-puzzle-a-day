@@ -26,6 +26,16 @@ export const pieces = [
     ],
     name: 'a',
     color: 'red',
+    transforms: [
+      'rotate90',
+      'rotate90',
+      'rotate90',
+      'flipH',
+      'rotate90',
+      'rotate90',
+      'rotate90',
+      'flipH',
+    ],
   },
   {
     shape: [
@@ -34,6 +44,7 @@ export const pieces = [
     ],
     name: 'b',
     color: 'blue',
+    transforms: ['rotate90', 'rotate90'],
   },
   {
     shape: [
@@ -43,6 +54,7 @@ export const pieces = [
     ],
     name: 'c',
     color: 'green',
+    transforms: ['rotate90', 'flipH', 'rotate90', 'flipH'],
   },
   {
     shape: [
@@ -52,6 +64,7 @@ export const pieces = [
     ],
     name: 'd',
     color: 'pink',
+    transforms: ['rotate90', 'rotate90', 'rotate90', 'rotate90'],
   },
   {
     shape: [
@@ -60,6 +73,16 @@ export const pieces = [
     ],
     name: 'e',
     color: 'orange',
+    transforms: [
+      'rotate90',
+      'rotate90',
+      'rotate90',
+      'flipH',
+      'rotate90',
+      'rotate90',
+      'rotate90',
+      'flipH',
+    ],
   },
   {
     shape: [
@@ -68,6 +91,16 @@ export const pieces = [
     ],
     name: 'f',
     color: 'purple',
+    transforms: [
+      'rotate90',
+      'rotate90',
+      'rotate90',
+      'flipH',
+      'rotate90',
+      'rotate90',
+      'rotate90',
+      'flipH',
+    ],
   },
   {
     shape: [
@@ -76,6 +109,7 @@ export const pieces = [
     ],
     name: 'g',
     color: 'violet',
+    transforms: ['rotate90', 'rotate90', 'rotate90', 'rotate90'],
   },
   {
     shape: [
@@ -84,5 +118,15 @@ export const pieces = [
     ],
     name: 'h',
     color: 'DarkTurquoise',
+    transforms: [
+      'rotate90',
+      'rotate90',
+      'rotate90',
+      'flipH',
+      'rotate90',
+      'rotate90',
+      'rotate90',
+      'flipH',
+    ],
   },
 ]

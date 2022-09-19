@@ -32,21 +32,21 @@
   </div>
 </template>
 <script>
-import { mapMutations } from 'vuex'
+import { mapMutations, mapActions } from 'vuex'
 export default {
   props: {},
   data() {
     return {}
   },
   methods: {
-    ...mapMutations({
-      rotatePiece90: 'box/rotatePiece90',
-      rotatePieceN90: 'box/rotatePieceN90',
-
-      flipPieceH: 'box/flipPieceH',
-      flipPieceV: 'box/flipPieceV',
-      clearCurrent: 'box/clearCurrent',
-      clearBoardTemp: 'puzzleBoard/clearBoardTemp',
+    ...mapMutations({}),
+    ...mapActions({
+      rotatePiece90: 'puzzle/rotatePiece90',
+      rotatePieceN90: 'puzzle/rotatePieceN90',
+      flipPieceH: 'puzzle/flipPieceH',
+      flipPieceV: 'puzzle/flipPieceV',
+      clearCurrent: 'puzzle/clearCurrent',
+      clearBoardTemp: 'puzzle/clearBoardTemp',
     }),
     clear() {
       this.clearCurrent()
@@ -55,7 +55,7 @@ export default {
   },
   computed: {
     tPiece() {
-      return this.$store.state.box.currentPiece
+      return this.$store.state.puzzle.boxCurrentPiece
     },
   },
   mounted() {

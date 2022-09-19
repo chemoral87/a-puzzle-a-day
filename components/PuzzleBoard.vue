@@ -1,5 +1,14 @@
 <template>
   <div>
+    <!-- {{ count }} / {{ powercount }} <br /> -->
+    <!-- {{ badGames }} -->
+    <v-dialog v-model="thinking" persistent>
+      <v-card>
+        <v-card-title class="text-h5 grey lighten-2">
+          Solucionando...
+        </v-card-title>
+      </v-card>
+    </v-dialog>
     <v-row dense>
       <v-col cols="6" sm="auto">
         <v-select :items="select_months" v-model="month_play" label="Month">
@@ -13,7 +22,8 @@
         ></v-select>
       </v-col>
       <v-col cols="auto">
-        <v-btn class="primary" @click="newPlay">Play</v-btn>
+        <v-btn class="primary" @click="newPlayExternal">Play</v-btn>
+        <v-btn class="info" @click="setAlgorith">Auto Resolve </v-btn>
       </v-col>
     </v-row>
 
@@ -43,6 +53,11 @@
         <CurrentPiece />
       </v-col>
     </v-row>
+    <v-row>
+      <v-col cols="auto">
+        <!-- <Badgames :games="badGames" /> -->
+      </v-col>
+    </v-row>
   </div>
 </template>
 <script>
@@ -57,30 +72,269 @@ export default {
       day_play: 1,
       select_months: months,
       select_days: days,
+      iterations: 0,
+      iterGood: 0,
+      iterFailed: 0,
+      badGames: [],
+      count: 0,
+      powercount: 0,
+      thinking: false,
     }
   },
   methods: {
     ...mapMutations({
-      clearBoardTemp: 'puzzleBoard/clearBoardTemp',
-      initBoard: 'puzzleBoard/initBoard',
-      setBoardTemp: 'puzzleBoard/setBoardTemp',
-      setPieceOnPuzzle: 'puzzleBoard/setPieceOnPuzzle',
-
-      clearCurrent: 'box/clearCurrent',
-      removePieceFromBox: 'box/removePieceFromBox',
-      setPieceOnBox: 'box/setPieceOnBox',
-      // flipPiece: 'puzzleBoard/flipPiece',
-      // setCurrentPiece: 'puzzleBoard/setCurrentPiece',
+      clearBoardTemp: 'puzzle/clearBoardTemp',
+      initPuzzle: 'puzzle/initPuzzle',
+      shuffle: 'puzzle/shuffle',
+      setBoardTemp: 'puzzle/setBoardTemp',
+      clearCurrent: 'puzzle/clearCurrent',
+      setPieceOnBox: 'puzzle/setPieceOnBox',
+      setCurrentPiece: 'puzzle/setCurrentPiece',
     }),
     ...mapActions({
-      removeAllPieceFromPuzzle: 'puzzleBoard/removeAllPieceFromPuzzle',
-      newPuzzlePlay: 'puzzleBoard/newPuzzlePlay',
+      setPieceOnBoard: 'puzzle/setPieceOnBoard',
+      placePieceInRandomEmptyCells: 'puzzle/placePieceInRandomEmptyCells',
+      placePieceInEmptyCell: 'puzzle/placePieceInEmptyCell',
+      canPutPiecesOnNextCells: 'puzzle/canPutPiecesOnNextCells',
+      removePieceFromBoard: 'puzzle/removePieceFromBoard',
+      removeAllPieceFromPuzzle: 'puzzle/removeAllPieceFromPuzzle',
+      newPuzzlePlay: 'puzzle/newPuzzlePlay',
+      getRandomPieceFromBox: 'puzzle/getRandomPieceFromBox',
+      removeRandomPieceFromBoard: 'puzzle/removeRandomPieceFromBoard',
+      removeLastPlacedPieceFromBoard: 'puzzle/removeLastPlacedPieceFromBoard',
+      rotatePiece90: 'puzzle/rotatePiece90',
+      rotatePiece180: 'puzzle/rotatePiece180',
+      rotatePieceN90: 'puzzle/rotatePieceN90',
+      flipPieceH: 'puzzle/flipPieceH',
+      flipPieceV: 'puzzle/flipPieceV',
     }),
-    async newPlay() {
-      let pieces = await this.removeAllPieceFromPuzzle()
-      for (let [ix, piece] of pieces.entries()) {
-        this.setPieceOnBox(piece)
+    async setRandomPieceAlgorithm3() {
+      // PONER 4 PIEZAS Y TRABAJAR EN ELLAS SOLAMENTE
+      let boxPieces = Object.assign([], this.getBoxPieces)
+      let boardEmptyCells = Object.assign([], this.getBoardEmptyCells)
+
+      while (boxPieces.length > 0) {
+        let boxPiece = boxPieces.shift()
+        let transforms = Object.assign([], boxPiece.transforms)
+        while (transforms.length > 0) {
+          let transform = transforms.shift()
+          if (transform == 'rotate90')
+            boxPiece = await this.rotatePiece90(boxPiece)
+          if (transform == 'flipH') boxPiece = await this.flipPieceH(boxPiece)
+
+          let flagHasPlaced = await this.placePieceInEmptyCell({
+            piece: boxPiece,
+            cell: boardEmptyCells[0],
+          })
+
+          if (flagHasPlaced) {
+            // this.binaryTree.push(boxPiece)
+          }
+        }
       }
+    },
+    async setAlgorith() {
+      this.thinking = true
+      await this.setRandomPieceAlgorithm2()
+    },
+
+    async setRandomPieceAlgorithm2() {
+      this.newPlay()
+      let iterations = 0
+      let boardEmptyCells = Object.assign([], this.getBoardEmptyCells)
+      // let count = 0
+      // let this.powercount = 0
+      while (boardEmptyCells.length > 0 && iterations < 1600) {
+        // console.log(iterations)
+        let hasPlaced = false
+        let boxPiece
+        let boxPieces = Object.assign([], this.getBoxPieces)
+
+        while (boxPieces.length > 0) {
+          boxPiece = await boxPieces.splice(
+            Math.floor(Math.random() * boxPieces.length),
+            1
+          )[0]
+
+          this.setCurrentPiece(boxPiece)
+
+          let transforms = Object.assign([], boxPiece.transforms)
+          if (Math.floor(Math.random * 2) == 1) {
+            transforms = transforms.reverse()
+          }
+          while (transforms.length > 0) {
+            let transform = await transforms.splice(
+              0, // Math.floor(Math.random() * transforms.length),
+              1
+            )[0]
+
+            if (transform == 'rotate90')
+              boxPiece = await this.rotatePiece90(boxPiece)
+            if (transform == 'flipH') boxPiece = await this.flipPieceH(boxPiece)
+
+            let flagHasPlaced = await this.placePieceInEmptyCell({
+              piece: boxPiece,
+              cell: boardEmptyCells[0],
+            })
+
+            if (flagHasPlaced) {
+              let emptyIsolateCells = Object.assign(
+                [],
+                this.getEmptyIsolateCells
+              )
+
+              if (emptyIsolateCells.length > 0) {
+                await this.removePieceFromBoard(boxPiece)
+                continue
+              } else if (
+                !(await this.canPutPiecesOnNextCells({
+                  cells: this.getBoardEmptyCells,
+                  pieces: this.getBoxPieces,
+                }))
+              ) {
+                await this.removePieceFromBoard(boxPiece)
+                // boxPieces = Object.assign([], this.getBoxPieces)
+                continue
+              }
+
+              if (-1 !== [2, 3, 4].indexOf(this.getBoardPieces.length)) {
+                // if (this.getBoardPieces.length == 4) {
+                let isBadGame = false
+                let badGames_ = this.badGames.filter(
+                  (x) => x.length == this.getBoardPieces.length
+                )
+                for (let badGame of badGames_) {
+                  // if (this.$arraysEqual(badGame, this.getBoardPieces)) {
+                  if (
+                    JSON.stringify(badGame) ==
+                    JSON.stringify(this.getBoardPieces)
+                  ) {
+                    isBadGame = true
+                    break
+                  }
+                }
+
+                if (isBadGame) {
+                  await this.newPlay()
+                  this.count = 0
+                  this.powercount = 0
+                }
+              }
+              hasPlaced = true
+              break
+            }
+          }
+
+          if (hasPlaced) {
+            break
+          }
+        }
+
+        if (!hasPlaced) {
+          this.count++
+          if (this.count >= 2) {
+            let piecesOnBoard
+            if (this.getBoardPieces.length > 4)
+              piecesOnBoard = await this.removeLastPlacedPieceFromBoard()
+            while (piecesOnBoard > 4) {
+              piecesOnBoard = await this.removeLastPlacedPieceFromBoard()
+            }
+            this.count = 0
+            this.powercount++
+            if (this.powercount > 1) {
+              let badGame = this.getBoardPieces.slice(0, 4)
+              console.log('badGame', badGame.length)
+              if (-1 !== [2, 3, 4].indexOf(badGame.length)) {
+                // let newBadGame = Object.assign([], badGame)
+                let newBadGame = await JSON.parse(JSON.stringify(badGame))
+                await this.badGames.push(newBadGame)
+              }
+              await this.newPlay()
+              this.powercount = 0
+            }
+            boardEmptyCells = Object.assign([], this.getBoardEmptyCells)
+          }
+        } else {
+          boardEmptyCells = Object.assign([], this.getBoardEmptyCells)
+        }
+
+        iterations++
+      }
+
+      // this.powercount = 0
+      // this.count = 0
+      this.thinking = false
+    },
+
+    async setRandomPieceAlgorithm1() {
+      this.iterations = 0
+      this.iterGood = 0
+      this.iterFailed = 0
+
+      while (this.iterations < 5) {
+        let pieces = this.getBoxPieces
+        let boardPieces = this.getBoardPieces
+
+        // let randomPiece = pieces[Math.floor(Math.random() * pieces.length)]
+        let randomPiece = await this.getRandomPieceFromBox()
+        this.setCurrentPiece(randomPiece)
+        let transforms = Object.assign([], randomPiece.transforms)
+
+        this.iterations++
+
+        let hasPlaced = false
+        if (Math.floor(Math.random() * 2) == 0) {
+          transforms = transforms.reverse()
+        }
+        for (let transform of transforms) {
+          if (transform == 'rotate90') this.rotatePiece90(randomPiece)
+          if (transform == 'flipH') this.flipPieceH(randomPiece)
+          hasPlaced = await this.placePieceInRandomEmptyCells(randomPiece)
+
+          if (hasPlaced) {
+            break
+          }
+        }
+
+        // verify if we finist
+        if (this.getBoxPieces.length == 0) {
+          alert('Congratulations YOU FINISH')
+          break
+        }
+
+        let emptyIsolateCells = Object.assign([], this.getEmptyIsolateCells)
+        if (emptyIsolateCells.length > 0) {
+          while (emptyIsolateCells.length > 0) {
+            // remove a previos
+            let emptyIsolateCell =
+              emptyIsolateCells[
+                Math.floor(Math.random() * emptyIsolateCells.length)
+              ]
+
+            let neibors = emptyIsolateCell.neighbors.filter(
+              (x) => !Number.isInteger(x.val)
+            )
+            let neibor = neibors[Math.floor(Math.random() * neibors.length)]
+            this.removePieceFromBoard(neibor.val)
+            emptyIsolateCells = Object.assign([], this.getEmptyIsolateCells)
+            // this.removeRandomPieceFromBoard()
+          }
+        } else if (!hasPlaced) {
+          this.removeRandomPieceFromBoard()
+        }
+      }
+    },
+    async newPlayExternal() {
+      // let pieces = await this.removeAllPieceFromPuzzle()
+      this.badGames = []
+      this.newPlay()
+    },
+    async newPlay() {
+      this.initPuzzle()
+      this.shuffle()
+      // for (let [ix, piece] of pieces.entries()) {
+      //   this.setPieceOnBox(piece)
+      // }
       this.newPuzzlePlay({ month: this.month_play, day: this.day_play })
     },
     getBackground(x, y) {
@@ -137,13 +391,15 @@ export default {
 
       this.setBoardTemp(boardTempEmpty)
     },
-    setPiece(y, x) {
+    async setPiece(y, x) {
       if (this.currentPiece == null) return
       let canPlaced = this.$canPlace(this.currentPiece, this.board, y, x)
       if (canPlaced) {
-        this.setPieceOnPuzzle({ piece: this.currentPiece, posY: y, posX: x })
-        this.removePieceFromBox(this.currentPiece)
-        this.clearCurrent()
+        await this.setPieceOnBoard({
+          piece: this.currentPiece,
+          posY: y,
+          posX: x,
+        })
       }
       if (this.getBoxPieces.length == 0) {
         alert('Congratulations YOU FINISH')
@@ -152,19 +408,25 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getBoxPieces: 'box/getBoxPieces',
+      getBoxPieces: 'puzzle/getBoxPieces',
+      getBoardPieces: 'puzzle/getBoardPieces',
+      getBoardEmptyCells: 'puzzle/getBoardEmptyCells',
+      getEmptyIsolateCells: 'puzzle/getEmptyIsolateCells',
     }),
     board() {
-      return this.$store.state.puzzleBoard.board
+      return this.$store.state.puzzle.board
     },
     boardTemplate() {
-      return this.$store.state.puzzleBoard.boardTemplate
+      return this.$store.state.puzzle.boardTemplate
     },
     boardTemp() {
-      return this.$store.state.puzzleBoard.boardTemp
+      return this.$store.state.puzzle.boardTemp
     },
     currentPiece() {
-      return this.$store.state.box.currentPiece
+      return this.$store.state.puzzle.boxCurrentPiece
+    },
+    binaryTree() {
+      return this.$store.state.puzzle.binaryTree
     },
   },
   mounted() {

@@ -13,6 +13,7 @@
           </td>
         </tr>
       </table>
+
       <br />
     </v-col>
   </v-row>
@@ -20,31 +21,22 @@
 <script>
 import { mapMutations } from 'vuex'
 export default {
-  props: {},
-  data() {
-    return {}
-  },
   computed: {
     pieces() {
-      return this.$store.state.box.pieces
+      return this.$store.state.puzzle.boxPieces
     },
   },
   // https://htmlcolorcodes.com/es/nombres-de-los-colores/
   methods: {
     ...mapMutations({
-      rotatePiece: 'box/rotatePiece',
-      flipPiece: 'box/flipPiece',
-      setCurrentPiece: 'box/setCurrentPiece',
-      clearBoardTemp: 'puzzleBoard/clearBoardTemp',
+      setCurrentPiece: 'puzzle/setCurrentPiece',
+      clearBoardTemp: 'puzzle/clearBoardTemp',
     }),
 
     setPiece(shape) {
       this.clearBoardTemp()
       this.setCurrentPiece(shape)
     },
-  },
-  mounted() {
-    let me = this
   },
 }
 </script>

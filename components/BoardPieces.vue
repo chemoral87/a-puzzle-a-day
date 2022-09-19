@@ -2,9 +2,9 @@
   <div>
     <div>Board Pieces</div>
     <v-list-item
-      v-for="piece in pieces"
+      v-for="(piece, index) in pieces"
       :style="{ backgroundColor: piece.color }"
-      :key="piece.name"
+      :key="piece.name + index"
     >
       <v-list-item-content class="ma-0">{{ piece.name }}</v-list-item-content>
       <v-list-item-action class="ma-0">
@@ -16,25 +16,24 @@
   </div>
 </template>
 <script>
-import { mapMutations, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 export default {
   props: {},
   data() {
     return {}
   },
   methods: {
-    ...mapMutations({
-      removePieceFromPuzzle: 'puzzleBoard/removePieceFromPuzzle',
-      setPieceOnBox: 'box/setPieceOnBox',
+    ...mapActions({
+      removePieceFromBoard: 'puzzle/removePieceFromBoard',
     }),
-    removePiece(piece) {
-      this.removePieceFromPuzzle(piece)
-      this.setPieceOnBox(piece)
+
+    async removePiece(piece) {
+      await this.removePieceFromBoard(piece)
     },
   },
   computed: {
     pieces() {
-      return this.$store.state.puzzleBoard.pieces
+      return this.$store.state.puzzle.boardPieces
     },
   },
   mounted() {
