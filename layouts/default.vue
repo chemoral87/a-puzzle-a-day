@@ -75,6 +75,13 @@ export default {
           title: 'A Puzzle a Day',
           to: '/',
         },
+
+        {
+          icon: 'mdi-key',
+          title: 'Coding Question',
+          to: '/coding-question',
+        },
+
         {
           icon: 'mdi-chart-bubble',
           title: 'Inspire',

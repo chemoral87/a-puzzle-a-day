@@ -178,15 +178,17 @@ export default {
             })
 
             if (flagHasPlaced) {
-              let emptyIsolateCells = Object.assign(
-                [],
-                this.getEmptyIsolateCells
-              )
+              // let emptyIsolateCells = Object.assign(
+              //   [],
+              //   this.getEmptyIsolateCells
+              // )
 
-              if (emptyIsolateCells.length > 0) {
-                await this.removePieceFromBoard(boxPiece)
-                continue
-              } else if (
+              // if (emptyIsolateCells.length > 0) {
+              //   await this.removePieceFromBoard(boxPiece)
+              //   continue
+              // } else
+
+              if (
                 !(await this.canPutPiecesOnNextCells({
                   cells: this.getBoardEmptyCells,
                   pieces: this.getBoxPieces,
