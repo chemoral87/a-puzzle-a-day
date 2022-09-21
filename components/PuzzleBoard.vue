@@ -145,7 +145,6 @@ export default {
       // let count = 0
       // let this.powercount = 0
       while (boardEmptyCells.length > 0 && iterations < 1800) {
-        // console.log(iterations)
         let hasPlaced = false
         let boxPiece
         let boxPieces = Object.assign([], this.getBoxPieces)
@@ -198,17 +197,23 @@ export default {
               }
 
               if (-1 !== [2, 3, 4].indexOf(this.getBoardPieces.length)) {
-                // if (this.getBoardPieces.length == 4) {
                 let isBadGame = false
                 let badGames_ = this.badGames.filter(
                   (x) => x.length == this.getBoardPieces.length
                 )
+
+                let boardPieces = JSON.parse(
+                  JSON.stringify(this.getBoardPieces)
+                )
+                for (let board of boardPieces) {
+                  delete board.transforms
+                  delete board.color
+                  delete board.name
+                }
+
                 for (let badGame of badGames_) {
                   // if (this.$arraysEqual(badGame, this.getBoardPieces)) {
-                  if (
-                    JSON.stringify(badGame) ==
-                    JSON.stringify(this.getBoardPieces)
-                  ) {
+                  if (JSON.stringify(badGame) == JSON.stringify(boardPieces)) {
                     isBadGame = true
                     break
                   }
@@ -243,10 +248,16 @@ export default {
             this.powercount++
             if (this.powercount > 1) {
               let badGame = this.getBoardPieces.slice(0, 4)
-              console.log('badGame', badGame.length)
+
               if (-1 !== [2, 3, 4].indexOf(badGame.length)) {
                 // let newBadGame = Object.assign([], badGame)
                 let newBadGame = await JSON.parse(JSON.stringify(badGame))
+                for (let board of newBadGame) {
+                  delete board.transforms
+                  delete board.color
+                  delete board.name
+                }
+
                 await this.badGames.push(newBadGame)
               }
               await this.newPlay()

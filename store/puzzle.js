@@ -242,7 +242,6 @@ export const actions = {
     //   return true
     // }
     for (let { x, y } of cells) {
-      // console.log('x,y', x, y)
       let flagPlaced = false
       for (let piece of pieces) {
         // let transforms = Object.assign([], boxPiece.transforms)
