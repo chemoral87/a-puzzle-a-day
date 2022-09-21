@@ -58,6 +58,7 @@
         <!-- <Badgames :games="badGames" /> -->
       </v-col>
     </v-row>
+    v.2.0
   </div>
 </template>
 <script>
@@ -192,7 +193,6 @@ export default {
                 }))
               ) {
                 await this.removePieceFromBoard(boxPiece)
-                // boxPieces = Object.assign([], this.getBoxPieces)
                 continue
               }
 
@@ -212,7 +212,6 @@ export default {
                 }
 
                 for (let badGame of badGames_) {
-                  // if (this.$arraysEqual(badGame, this.getBoardPieces)) {
                   if (JSON.stringify(badGame) == JSON.stringify(boardPieces)) {
                     isBadGame = true
                     break
