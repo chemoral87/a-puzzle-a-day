@@ -148,7 +148,8 @@ export default {
       while (boardEmptyCells.length > 0 && iterations < 1800) {
         let hasPlaced = false
         let boxPiece
-        let boxPieces = Object.assign([], this.getBoxPieces)
+        // let boxPieces = this.getBoxPieces
+        let boxPieces = JSON.parse(JSON.stringify(this.getBoxPieces))
 
         while (boxPieces.length > 0) {
           boxPiece = await boxPieces.splice(

@@ -44,4 +44,12 @@ export default ({ app }, inject) => {
     }
     return true
   })
+  inject('rotate90', (matrix) => {
+    return matrix[0].map((val, index) =>
+      matrix.map((row) => row[index]).reverse()
+    )
+  })
+  inject('flipH', (matrix) => {
+    return matrix.map((row, index) => row.reverse())
+  })
 }

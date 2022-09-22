@@ -48,7 +48,7 @@
         </tr>
       </tbody>
     </v-simple-table>
-    {{ triangles }}
+    <!-- {{ triangles }} -->
   </div>
 </template>
 <script>
@@ -67,11 +67,11 @@ export default {
   },
   computed: {
     getWidth() {
-      let width = this.rows * (this.pixels + 1)
+      let width = this.columns * (this.pixels + 1)
       return width
     },
     getHeight() {
-      let height = this.columns * (this.pixels + 1)
+      let height = this.rows * (this.pixels + 1)
       return height
     },
     getFilterTriangles() {
@@ -81,12 +81,20 @@ export default {
         let realCoords = []
         for (let coord of coords) {
           let pos = coord.trim().slice(1, -1).split(',')
-          let x = pos[0].trim()
-          let y = pos[1].trim()
+          let x = parseInt(pos[0].trim())
+          let y = parseInt(pos[1].trim())
           realCoords.push({ x, y })
         }
-        console.log(realCoords)
-      } catch (ex) {}
+        // console.log(realCoords)
+        let matchTriangles = triangles_.filter((val) => {
+          let matches = this.matchCount(val.vertexs, realCoords)
+          console.log(matches)
+          return realCoords.length == matches
+        })
+        return matchTriangles
+      } catch (ex) {
+        console.log(ex)
+      }
       // var pos_segs = pos.slice(1,-1).split(', ');
       // console.log(coord)
       return triangles_
@@ -94,6 +102,16 @@ export default {
   },
 
   methods: {
+    matchCount(array1, array2) {
+      let count = 0
+      for (let arr1 of array1) {
+        for (let arr2 of array2) {
+          // console.log(arr1, arr2)
+          if (arr1.x == arr2.x && arr1.y == arr2.y) count++
+        }
+      }
+      return count
+    },
     generateBoard() {
       this.buildTriangles()
       this.drawTrianglesOnCanvas()
